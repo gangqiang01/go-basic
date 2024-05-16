@@ -1,12 +1,11 @@
 package middlewares
 
 import (
-	"encoding/json"
-	"github.com/edgehook/ithings/transport/isync"
+	"net/http"
+
 	responce "github.com/edgehook/ithings/webserver/types"
 	"github.com/gin-gonic/gin"
 	"k8s.io/klog/v2"
-	"net/http"
 )
 
 func Cors() gin.HandlerFunc {
@@ -27,17 +26,6 @@ func Cors() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		// path := c.FullPath()
-		// if strings.Contains(path, "v1") && !strings.Contains(path, "export") && !strings.Contains(path, "download") && !strings.Contains(path, "SimpleJsons") {
-		// 	token := c.Request.Header.Get("accesstoken")
-		// 	srpToken := c.Request.Header.Get("Srptoken")
-		// 	if !verifyToken("accesstoken", token) && !verifyToken("Srptoken", srpToken) {
-		// 		responce.FailWithCodeAndMessage(401, "illegal user", c)
-		// 		//stop context
-		// 		c.Abort()
-		// 		return
-		// 	}
-		// }
 
 		defer func() {
 			if err := recover(); err != nil {
@@ -48,33 +36,4 @@ func Cors() gin.HandlerFunc {
 
 		c.Next()
 	}
-}
-
-func verifyToken(header, token string) bool {
-	type tokenData struct {
-		Header string `form:"header" json:"header,omitempty"`
-		Token  string `form:"token" json:"token,omitempty"`
-	}
-
-	data := &tokenData{
-		Token:  token,
-		Header: header,
-	}
-
-	body, err := json.Marshal(data)
-	if err != nil {
-		klog.Errorf("Json Marshal with  err %v", err)
-		return false
-	}
-	appHubResponse, err := isync.SendMsgToAppHub("verifyToken", string(body))
-
-	if err != nil {
-		klog.Errorf("Send msg to AppHub with  err %v", err)
-		return false
-	}
-
-	if appHubResponse.StatusCode == "200" {
-		return true
-	}
-	return false
 }
