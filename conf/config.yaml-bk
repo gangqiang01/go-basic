@@ -1,0 +1,29 @@
+db:
+  influx:
+    address: http://172.21.84.155:8086
+    db_name: ithings
+    duration: 3d
+    enable: false
+    passwd: "123456"
+    user: root
+  postgre:
+    db_name: aimlink
+    host: 127.0.0.1
+    max_idle_conns: 5
+    max_open_conns: 10
+    passwd: postgres
+    port: 5432
+    usr: postgres
+  used: postgre
+transport:
+  isyncor:
+    server_address: 127.0.0.1:50051
+  mqtt:
+    broker: 127.0.0.1
+    passwd: "05155853"
+    usr: admin
+webserver:
+  bind_address: :8082
+  ssl: false
+  ssl_cert_file: ""
+  ssl_key_file: ""

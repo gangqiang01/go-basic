@@ -1,0 +1,12 @@
+#
+# Normal rules
+#
+*.tar.*
+*.exe
+*.db
+*.o
+*.obj
+*.log
+ithings  
+ithings.exe
+
