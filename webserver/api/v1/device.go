@@ -7,6 +7,7 @@ import (
 
 	responce "github.com/edgehook/ithings/webserver/types"
 	"github.com/gin-gonic/gin"
+	"k8s.io/klog/v2"
 
 	"strings"
 )
@@ -33,6 +34,7 @@ func buildMagicPacket(macAddress string) ([]byte, error) {
 
 // sendMagicPacket 发送WOL（Wake-on-LAN）数据包
 func sendMagicPacket(macAddress string) error {
+	klog.Infof("mac:%s", macAddress)
 	magicPacket, err := buildMagicPacket(macAddress)
 	if err != nil {
 		return err

@@ -1,18 +1,21 @@
 package webserver
 
 import (
-	"crypto/tls"
-	"github.com/edgehook/ithings/common/config"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/edgehook/ithings/webserver/router"
 	"github.com/jwzl/beehive/pkg/core"
 	"k8s.io/klog"
-	"net/http"
-	"time"
 )
 
 const (
 	WebServerName = "webserver"
 )
+
+var BindAddress = ":9001"
 
 type WebServer struct {
 }
@@ -42,45 +45,21 @@ func (ws *WebServer) Enable() bool {
 // Start this module.
 func (ws *WebServer) Start() {
 	var err error
-
 	initRouter := router.InitRouter()
-	cfg := config.GetWebServerConfig()
-	klog.Infof("Start web server on %s ", cfg.BindAddress)
+	if !strings.Contains(BindAddress, ":") {
+		BindAddress = fmt.Sprintf(":%s", BindAddress)
+	}
+	klog.Infof("Start web server on %s ", BindAddress)
 	s := &http.Server{
-		Addr:           cfg.BindAddress,
+		Addr:           BindAddress,
 		Handler:        initRouter,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	if cfg.SSL {
-		s.TLSConfig = createServerTLSConfiguration()
-		err = s.ListenAndServeTLS(cfg.SSLCert, cfg.SSLKey)
-	} else {
-		err = s.ListenAndServe()
-	}
-
-	if err != nil {
+	if err = s.ListenAndServe(); err != nil {
 		klog.Errorf("Start web server with error: %v", err)
 		return
-	}
-}
-
-// createServerTLSConfiguration creates a basic tls.Config to be used by servers with recommended TLS settings
-func createServerTLSConfiguration() *tls.Config {
-	return &tls.Config{
-		MinVersion: tls.VersionTLS12,
-		CipherSuites: []uint16{
-			tls.TLS_AES_128_GCM_SHA256,
-			tls.TLS_AES_256_GCM_SHA384,
-			tls.TLS_CHACHA20_POLY1305_SHA256,
-			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
-			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
-		},
 	}
 }

@@ -1,17 +1,15 @@
 package dbm
 
 import (
+	"time"
+
 	"github.com/edgehook/ithings/common/config"
-	"github.com/edgehook/ithings/common/dbm/model"
-	"github.com/edgehook/ithings/common/global"
-	"github.com/edgehook/ithings/common/influxdbm"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"k8s.io/klog/v2"
-	"time"
 )
 
 // GormInit init the database according to the config file.
@@ -111,22 +109,22 @@ func GormSQLite(config *config.DBConfig) *gorm.DB {
 }
 
 func init() {
-	conf := config.GetDBConfig()
-	if conf == nil {
-		panic("DBConfig is missing")
-	}
+	// conf := config.GetDBConfig()
+	// if conf == nil {
+	// 	panic("DBConfig is missing")
+	// }
 
-	global.DBAccess = GormInit(conf)
-	if global.DBAccess == nil {
-		panic("Oops, gorm init failed!")
-	}
+	// global.DBAccess = GormInit(conf)
+	// if global.DBAccess == nil {
+	// 	panic("Oops, gorm init failed!")
+	// }
 
-	//register tabels.
-	err := model.RegisterTables(global.DBAccess)
-	if err != nil {
-		panic(err)
-	}
-	//init influxdb
-	influxdbm.InitInfluxDb()
+	// //register tabels.
+	// err := model.RegisterTables(global.DBAccess)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// //init influxdb
+	// influxdbm.InitInfluxDb()
 
 }
